@@ -24,9 +24,15 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           latest=$(gh api repos/agentmail-to/agentmail-python/releases/latest --jq .tag_name)
+          body=$(gh api repos/agentmail-to/agentmail-python/releases/latest --jq .body)
           current=$(grep 'version = ' flake.nix | head -1 | sed 's/.*"\(.*\)".*/\1/')
           echo "latest=$latest" >> "$GITHUB_OUTPUT"
           echo "current=$current" >> "$GITHUB_OUTPUT"
+          {
+            echo "body<<GHEOF"
+            echo "$body"
+            echo "GHEOF"
+          } >> "$GITHUB_OUTPUT"
           if [ "$latest" != "$current" ]; then
             echo "needs_update=true" >> "$GITHUB_OUTPUT"
           else
@@ -51,13 +57,20 @@ jobs:
         if: steps.check.outputs.needs_update == 'true'
         run: nix build
 
-      - name: Commit and push
+      - name: Commit, tag, and release
         if: steps.check.outputs.needs_update == 'true'
         env:
           NEW_VERSION: ${{ steps.check.outputs.latest }}
+          RELEASE_BODY: ${{ steps.check.outputs.body }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add flake.nix
           git commit -m "chore: update agentmail to $NEW_VERSION"
+          git tag "$NEW_VERSION"
           git push
+          git push origin "$NEW_VERSION"
+          gh release create "$NEW_VERSION" \
+            --title "$NEW_VERSION" \
+            --notes "$RELEASE_BODY"
