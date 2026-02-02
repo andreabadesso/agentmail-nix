@@ -10,14 +10,7 @@
 
   outputs = { self, nixpkgs, flake-utils, flake-compat, ... }:
     let
-      # ── pinned source ──────────────────────────────────────────
       version = "0.2.10";
-      src = nixpkgs.legacyPackages.x86_64-linux.fetchFromGitHub {
-        owner = "agentmail-to";
-        repo = "agentmail-python";
-        rev = version;
-        hash = "sha256-aKqxMIDO+IGKAXpprCFT9qmfYYeqhWjRqNrdYYfoe1M=";
-      };
     in
     flake-utils.lib.eachDefaultSystem (system:
       let
@@ -54,7 +47,8 @@
         };
       in
       {
-        packages.default = agentmail;
+        packages.default = python.withPackages (_: [ agentmail ]);
+        packages.agentmail = agentmail;
 
         devShells.default = pkgs.mkShell {
           packages = [
