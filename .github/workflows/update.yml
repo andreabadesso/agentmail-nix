@@ -45,7 +45,7 @@ jobs:
           NEW_VERSION: ${{ steps.check.outputs.latest }}
           OLD_VERSION: ${{ steps.check.outputs.current }}
         run: |
-          prefetch=$(nix-prefetch-github agentmail-to agentmail-python --rev "$NEW_VERSION")
+          prefetch=$(nix shell nixpkgs#nix-prefetch-github -c nix-prefetch-github agentmail-to agentmail-python --rev "$NEW_VERSION")
           new_hash=$(echo "$prefetch" | jq -r .hash)
 
           old_hash=$(grep 'hash = ' flake.nix | head -1 | sed 's/.*"\(.*\)".*/\1/')
