@@ -10,7 +10,7 @@
 
   outputs = { self, nixpkgs, flake-utils, flake-compat, ... }:
     let
-      version = "0.2.22";
+      version = "0.2.23";
     in
     flake-utils.lib.eachDefaultSystem (system:
       let
@@ -21,7 +21,7 @@
           owner = "agentmail-to";
           repo = "agentmail-python";
           rev = version;
-          hash = "sha256-qpGPT6D6v/6Nk6BrXiMOBzmj1T1tDn9maUGu9yrjBBE=";
+          hash = "sha256-avfoO5urTAlbQFVMfsZO2+ZILYcw6Z2RFmVhcsWqWPY=";
         };
 
         agentmail = python.pkgs.buildPythonPackage {
@@ -68,7 +68,7 @@
                 owner = "agentmail-to";
                 repo = "agentmail-python";
                 rev = version;
-                hash = "sha256-qpGPT6D6v/6Nk6BrXiMOBzmj1T1tDn9maUGu9yrjBBE=";
+                hash = "sha256-avfoO5urTAlbQFVMfsZO2+ZILYcw6Z2RFmVhcsWqWPY=";
               };
 
               nativeBuildInputs = [
